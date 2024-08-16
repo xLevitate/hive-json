@@ -1,19 +1,44 @@
 plugins {
     id("java")
+    id("maven-publish")
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 group = "me.levitate"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
+    implementation("com.squareup.moshi:moshi:1.15.1")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.shadowJar {
+    minimize()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            pom {
+                name.set("hive-json")
+                description.set("A Java library that makes it simple to store hashmaps of data using JSON.")
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "JitPack"
+            url = uri("https://jitpack.io")
+        }
+    }
 }

@@ -1,20 +1,19 @@
-package me.levitate.quill.storage.adapters;
+package me.levitate.hive.adapters;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.JsonWriter;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class BooleanAdapter extends JsonAdapter<Boolean> {
     @Override
     public Boolean fromJson(JsonReader reader) throws IOException {
-        return Boolean.valueOf(reader.nextString());
+        return reader.nextBoolean();
     }
 
     @Override
     public void toJson(JsonWriter writer, Boolean value) throws IOException {
-        writer.value(Objects.requireNonNull(value).toString());
+        writer.value(value);
     }
 }

@@ -1,9 +1,9 @@
-package me.levitate.quill.storage;
+package me.levitate.hive;
 
-import me.levitate.quill.storage.adapters.BooleanAdapter;
-import me.levitate.quill.storage.adapters.UUIDAdapter;
 import com.squareup.moshi.*;
 import lombok.Getter;
+import me.levitate.hive.adapters.BooleanAdapter;
+import me.levitate.hive.adapters.UUIDAdapter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -21,7 +21,6 @@ public abstract class JSONStorage<K, V> {
     private final Moshi moshi;
     private final JsonAdapter<Map<K, V>> jsonAdapter;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public JSONStorage(File dataFolder, String fileName, Class<K> keyClass, Class<V> valueClass) {
         this.file = new File(dataFolder, fileName);
         this.storage = new HashMap<>();
@@ -34,22 +33,21 @@ public abstract class JSONStorage<K, V> {
         final Type type = Types.newParameterizedType(Map.class, keyClass, valueClass);
         this.jsonAdapter = moshi.adapter(type);
 
-        // Ensure the data folder exists
-        if (!dataFolder.exists())
-            dataFolder.mkdirs();
+        if (!dataFolder.exists() && !dataFolder.mkdirs()) {
+            throw new RuntimeException("Could not create data folder: " + dataFolder);
+        }
     }
 
     public void save() {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(jsonAdapter.toJson(storage));
         } catch (IOException e) {
-            System.out.println("Quill Error -> " + e.getMessage());
+            throw new RuntimeException("Failed to write data to json file: " + file);
         }
     }
 
     public void load() {
-        if (!file.exists())
-            return;
+        if (!file.exists()) return;
 
         try {
             final String content = new String(Files.readAllBytes(file.toPath()));
@@ -60,7 +58,7 @@ public abstract class JSONStorage<K, V> {
                 storage.putAll(loadedMap);
             }
         } catch (IOException e) {
-            System.out.println("Quill Error -> " + e.getMessage());
+            throw new RuntimeException("Failed to read data from json file: " + file);
         }
     }
 }

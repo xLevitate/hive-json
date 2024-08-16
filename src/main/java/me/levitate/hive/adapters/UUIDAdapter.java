@@ -1,8 +1,9 @@
-package me.levitate.quill.storage.adapters;
+package me.levitate.hive.adapters;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.JsonWriter;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
