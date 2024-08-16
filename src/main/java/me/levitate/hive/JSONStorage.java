@@ -30,14 +30,16 @@ public abstract class JSONStorage<K, V> {
                 .add(Boolean.class, new BooleanAdapter())
                 .build();
 
-        final Type type = Types.newParameterizedType(Map.class, keyClass, valueClass);
-        this.jsonAdapter = moshi.adapter(type);
+        this.jsonAdapter = moshi.adapter(Types.newParameterizedType(Map.class, keyClass, valueClass));
 
         if (!dataFolder.exists() && !dataFolder.mkdirs()) {
             throw new RuntimeException("Could not create data folder: " + dataFolder);
         }
     }
 
+    /**
+     * Saves all the data from memory to file.
+     */
     public void save() {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(jsonAdapter.toJson(storage));
@@ -46,6 +48,9 @@ public abstract class JSONStorage<K, V> {
         }
     }
 
+    /**
+     * Loads all the data from file to memory.
+     */
     public void load() {
         if (!file.exists()) return;
 
