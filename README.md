@@ -1,7 +1,8 @@
 # hive-json
 [![](https://jitpack.io/v/xLevitate/hive-json.svg)](https://jitpack.io/#xLevitate/hive-json)
 
-An open-source Java library that allows for simple hashmap caching & storage supporting custom objects without any hassle.
+An open-source Java library that allows for simple hashmap caching & storage supporting custom objects without any hassle. The library was made to be using alongside the Spigot API, however it works universally.
+
 ## Installation
 hive-json can be added to your project using the JitPack repository, here's an example of how that can be done.
 
@@ -15,7 +16,7 @@ dependencies {
 }
 ```
 ## Example Usage
-Here's an example of how hive-json can be used in your code, in this example I'll be showcasing a simple example of how to store player levels.
+Here's an example of how hive-json can be used in your code, in this example I'll be showcasing a simple example of how to store Minecraft player levels using the Spigot API.
 
 ```java
 public class LevelStorage extends JSONStorage<UUID, Long> {
