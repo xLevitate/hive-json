@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "me.levitate"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -17,10 +17,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.32")
 
     implementation("com.squareup.moshi:moshi:1.15.1")
-}
-
-tasks.shadowJar {
-    minimize()
+    implementation("com.squareup.moshi:moshi-adapters:1.15.1")
 }
 
 publishing {
@@ -41,4 +38,8 @@ publishing {
             url = uri("https://jitpack.io")
         }
     }
+}
+
+tasks.shadowJar {
+    minimize()
 }

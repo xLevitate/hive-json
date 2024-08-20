@@ -13,6 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * This is the abstract class that handles the JSON storage.
+ *
+ * @param <K> Key
+ * @param <V> Value
+ */
 @Getter
 public abstract class JSONStorage<K, V> {
     private final File file;
