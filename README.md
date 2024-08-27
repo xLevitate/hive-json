@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.xLevitate:hive-json:1.0.1'
+    implementation 'com.github.xLevitate:hive-json:1.1.0'
 }
 ```
 ## Example Usage
