@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * This is the abstract class that handles the JSON storage.
@@ -42,9 +43,6 @@ public abstract class JSONStorage<K, V> {
         }
     }
 
-    /**
-     * Saves all the data from memory to file.
-     */
     public void save() {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(jsonAdapter.toJson(storage));
@@ -53,9 +51,6 @@ public abstract class JSONStorage<K, V> {
         }
     }
 
-    /**
-     * Loads all the data from file to memory.
-     */
     public void load() {
         if (!file.exists()) return;
 
@@ -70,5 +65,13 @@ public abstract class JSONStorage<K, V> {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read data from json file: " + file);
         }
+    }
+
+    public void update(K key, Consumer<V> consumer) {
+        final V value = storage.get(key);
+        if (value == null) return;
+
+        consumer.accept(value);
+        storage.put(key, value);
     }
 }
