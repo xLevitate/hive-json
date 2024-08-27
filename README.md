@@ -26,6 +26,10 @@ public class LevelStorage extends JSONStorage<UUID, Long> {
         // Load data from file
         load();
     }
+
+    public long getLevel(UUID uuid) {
+        return getStorage().getOrDefault(uuid, 1L);
+    }
 }
 ```
 
