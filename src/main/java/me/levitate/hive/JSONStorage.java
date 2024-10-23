@@ -1,6 +1,8 @@
 package me.levitate.hive;
 
-import com.squareup.moshi.*;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 import lombok.Getter;
 import me.levitate.hive.adapters.BooleanAdapter;
 import me.levitate.hive.adapters.UUIDAdapter;
@@ -8,30 +10,72 @@ import me.levitate.hive.adapters.UUIDAdapter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * This is the abstract class that handles the JSON storage.
+ * This is the class that handles the JSON storage.
  *
  * @param <K> Key
  * @param <V> Value
  */
 @Getter
-public abstract class JSONStorage<K, V> {
-    private final File file;
+public class JSONStorage<K, V> {
     private final Map<K, V> storage;
-    private final Moshi moshi;
-    private final JsonAdapter<Map<K, V>> jsonAdapter;
 
-    public JSONStorage(File dataFolder, String fileName, Class<K> keyClass, Class<V> valueClass) {
-        this.file = new File(dataFolder, fileName);
+    private Moshi.Builder builder;
+    private File dataFolder;
+    private String fileName;
+    private Class<K> keyClass;
+    private Class<V> valueClass;
+
+    private File file;
+    private Moshi moshi;
+    private JsonAdapter<Map<K, V>> jsonAdapter;
+
+    public JSONStorage() {
         this.storage = new HashMap<>();
+        this.builder = new Moshi.Builder();
+    }
 
-        this.moshi = new Moshi.Builder()
+    public JSONStorage<K, V> dataFolder(File dataFolder) {
+        this.dataFolder = dataFolder;
+        return this;
+    }
+
+    public JSONStorage<K, V> fileName(String fileName) {
+        this.fileName = fileName;
+        return this;
+    }
+
+    public JSONStorage<K, V> keyClass(Class<K> keyClass) {
+        this.keyClass = keyClass;
+        return this;
+    }
+
+    public JSONStorage<K, V> valueClass(Class<V> valueClass) {
+        this.valueClass = valueClass;
+        return this;
+    }
+
+    public <T> JSONStorage<K, V> addAdapter(Type type, JsonAdapter<T> jsonAdapter) {
+        this.builder = builder.add(type, jsonAdapter);
+        return this;
+    }
+
+    public JSONStorage<K, V> build() {
+        if (dataFolder == null || fileName == null || keyClass == null || valueClass == null) {
+            throw new IllegalStateException("Required properties are missing!");
+        }
+
+        this.file = new File(dataFolder, fileName);
+
+        this.moshi = builder
                 .add(UUID.class, new UUIDAdapter())
                 .add(Boolean.class, new BooleanAdapter())
                 .build();
@@ -41,6 +85,8 @@ public abstract class JSONStorage<K, V> {
         if (!dataFolder.exists() && !dataFolder.mkdirs()) {
             throw new RuntimeException("Could not create data folder: " + dataFolder);
         }
+
+        return this;
     }
 
     public void save() {
@@ -68,10 +114,18 @@ public abstract class JSONStorage<K, V> {
     }
 
     public void update(K key, Consumer<V> consumer) {
-        final V value = storage.get(key);
-        if (value == null) return;
+        Optional.ofNullable(storage.get(key))
+                .ifPresent(value -> {
+                    consumer.accept(value);
+                    storage.put(key, value);
+                });
+    }
 
-        consumer.accept(value);
+    public void put(K key, V value) {
         storage.put(key, value);
+    }
+
+    public void remove(K key) {
+        storage.remove(key);
     }
 }
