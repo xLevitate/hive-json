@@ -106,7 +106,7 @@ public class JSONStorage<K, V> {
             final String content = new String(Files.readAllBytes(file.toPath()));
             final Map<K, V> loadedMap = jsonAdapter.fromJson(content);
 
-            if (loadedMap != null) {
+            if (loadedMap != null && !loadedMap.isEmpty()) {
                 storage.clear();
                 storage.putAll(loadedMap);
             }
