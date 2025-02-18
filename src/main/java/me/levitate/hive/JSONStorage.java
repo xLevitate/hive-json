@@ -90,6 +90,8 @@ public class JSONStorage<K, V> {
     }
 
     public void save() {
+        if (!storage.isEmpty()) return;
+
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(jsonAdapter.toJson(storage));
         } catch (IOException e) {
